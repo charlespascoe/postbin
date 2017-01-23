@@ -3,7 +3,7 @@ import loggers from 'server/loggers';
 import Utils from 'server/utils';
 
 const singleUseTokenLength = 6,
-      expiryPeriod = 15 * 60 * 1000;
+      expiryPeriod = 5 * 60 * 1000;
 
 class Authenticator {
   constructor(loggers, config) {
