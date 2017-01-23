@@ -4,7 +4,7 @@
   "description": "Postbin",
   "main": "src/server/index.js",
   "scripts": {
-    "start": "NODE_PATH=\"$NODE_PATH:.compiled-server/\"; gulp start",
+    "start": "NODE_PATH=\"$NODE_PATH:.compiled-server/\"; gulp start | bunyan",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
