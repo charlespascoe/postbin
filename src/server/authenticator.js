@@ -1,5 +1,9 @@
 import config from 'server/config';
 import loggers from 'server/loggers';
+import Utils from 'server/utils';
+
+const singleUseTokenLength = 6,
+      expiryPeriod = 15 * 60 * 1000;
 
 class Authenticator {
   constructor(loggers, config) {
@@ -20,14 +24,22 @@ class Authenticator {
     );
   }
 
-  createSingleUseToken() {
+  async createSingleUseToken() {
+    let tokenKeyBuf = await Utils.randomBytes(singleUseTokenLength),
+        tokenKey = tokenKeyBuf.toString('hex');
 
+    this.singleUseTokens.push({
+      key: tokenKey,
+      expires: Date.now() + expiryPeriod
+    });
+
+    return tokenKey;
   }
 
   authenticate(req, res, next) {
     let authHeader = req.headers.authorization;
 
-    req..singleUseToken = false;
+    req.singleUseToken = false;
 
     let unauthenticated = (reason) => {
       this.loggers.security.warn({ip: req.ip, reason: reason}, 'Unauthenticated request attempt');
