@@ -2,7 +2,7 @@ import config from 'server/config';
 import loggers from 'server/loggers';
 import Utils from 'server/utils';
 
-const singleUseTokenLength = 6,
+const singleUseTokenLength = 4,
       expiryPeriod = 5 * 60 * 1000;
 
 class Authenticator {
@@ -26,7 +26,7 @@ class Authenticator {
 
   async createSingleUseToken() {
     let tokenKeyBuf = await Utils.randomBytes(singleUseTokenLength),
-        tokenKey = tokenKeyBuf.toString('hex');
+        tokenKey = tokenKeyBuf.toString('hex').match(/.{4}/g).join('-');
 
     this.singleUseTokens.push({
       key: tokenKey,
@@ -52,7 +52,7 @@ class Authenticator {
     }
 
     let basicAuthRegex = /^Basic ((?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4}))$/,
-        bearerAuthRegex = /^Bearer ([A-Za-z0-9]{1,128})$/;
+        bearerAuthRegex = /^Bearer ([a-f0-9-]+)$/;
 
     let match = authHeader.match(basicAuthRegex);
 
