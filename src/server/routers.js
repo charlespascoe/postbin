@@ -66,6 +66,14 @@ router.get('/bin/:id', catchHandler(async function (req, res) {
     throw err;
   }
 
+  if (req.query.encoding && /^(ascii|utf8|utf16le|ucs2|base64|hex)$/.test(req.query.encoding)) {
+    content = content.toString(req.query.encoding);
+
+    if (req.query.html) {
+      content = '<pre>' + content.replace('<', '&lt;').replace('>', '&gt;') + '</pre>';
+    }
+  }
+
   res.status(200).send(content);
 }));
 
