@@ -14,7 +14,6 @@ class Authenticator {
   }
 
   checkCredentials(username, password) {
-    this.loggers.security.debug({username: username, password: password}, 'Checking username and password');
     return (
       typeof username == 'string' &&
       typeof password == 'string' &&
@@ -43,7 +42,8 @@ class Authenticator {
 
     let unauthenticated = (reason) => {
       this.loggers.security.warn({ip: req.ip, reason: reason}, 'Unauthenticated request attempt');
-      res.status(401).setHeader('WWW-Authenticate', 'Basic').send();
+      res.setHeader('WWW-Authenticate', 'Basic');
+      res.status(401).send('401 - Authentication required\n');
     };
 
     if (typeof authHeader != 'string') {
