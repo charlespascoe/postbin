@@ -5,6 +5,7 @@ import catchAsync from 'server/catch-async';
 import config from 'server/config';
 import path from 'path';
 import afs from 'server/afs';
+import Utils from 'server/utils';
 
 const catchHandler = catchAsync((err, req, res) => {
   loggers.main.error({err: err});
@@ -17,7 +18,7 @@ router.use(authenticator.authenticate);
 
 router.get('/token', catchHandler(async function (req, res) {
   if (req.singleUseToken) {
-    res.status(403).end();
+    res.status(403).end('403 - Single-Use Token\n');
     return;
   }
 
@@ -26,35 +27,43 @@ router.get('/token', catchHandler(async function (req, res) {
   res.status(200).send(token + '\n');
 }));
 
-router.post('/bin', catchHandler(async function (req, res) {
-  let id = Date.now().toString(),
-      filePath = path.join(config.dataDir, id);
+router.param('id', function (req, res, next) {
+  if (!/^[a-z0-9_-]{1,64}$/i.test(req.params.id)) {
+    res.status(400).send('400 - Bad ID\n');
+    return;
+  }
 
-  await afs.writeFile(filePath, req.body);
+  next();
+});
+
+router.post('/bin/:id?', catchHandler(async function (req, res) {
+  let id;
+
+  if (req.params.id) {
+    id = req.params.id;
+  } else {
+    let idBuff = await Utils.randomBytes(4);
+    id = idBuff.toString('hex').match(/.{4}/g).join('-');
+  }
+
+  let filePath = path.join(config.dataDir, id);
+
+  await afs.writeFile(filePath, req.data);
 
   res.status(201).send(id + '\n');
 }));
 
 router.get('/bin/:id', catchHandler(async function (req, res) {
-  if (!/^\d+$/.test(req.params.id)) {
-    res.status(400).end();
-    return;
-  }
-
   let content;
   try {
     content = await afs.readFile(path.join(config.dataDir, req.params.id));
   } catch (err) {
     if (err.code == 'ENOENT') {
-      res.status(404).end();
+      res.status(404).end('404 - Not found\n');
       return;
     }
 
     throw err;
-  }
-
-  if (!req.query.nonewline) {
-    content += '\n';
   }
 
   res.status(200).send(content);
