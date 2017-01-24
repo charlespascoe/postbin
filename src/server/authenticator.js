@@ -59,13 +59,15 @@ class Authenticator {
     if (match) {
       let userPass = Buffer.from(match[1], 'base64').toString('utf-8').split(/:(.+)/);
 
-      if (this.checkCredentials(userPass[0], userPass[1])) {
+      if (userPass[0] === 'token') {
+        authHeader = `Bearer ${userPass[1]}`;
+      } else if (this.checkCredentials(userPass[0], userPass[1])) {
         next();
+        return;
       } else {
         unauthenticated('Basic auth: Invalid or incorrect username and password');
+        return;
       }
-
-      return;
     }
 
     match = authHeader.match(bearerAuthRegex);
