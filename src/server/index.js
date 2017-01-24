@@ -8,6 +8,16 @@ import rawBody from 'raw-body';
 const port = config.port || 8080;
 const app = express();
 
+app.use(function (req, res, next) {
+  res.result = new Result(res);
+
+  if (config.xForwardedFor) {
+    req.ip = req.headers['x-forwarded-for'] || req.ip;
+  }
+
+  next();
+});
+
 app.disable('x-powered-by');
 
 app.use(function (req, res, next) {
