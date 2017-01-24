@@ -41,7 +41,7 @@ class Authenticator {
     req.singleUseToken = false;
 
     let unauthenticated = (reason) => {
-      this.loggers.security.warn({ip: req.ip, reason: reason}, 'Unauthenticated request attempt');
+      this.loggers.security.warn({ip: req.clientIp, reason: reason}, 'Unauthenticated request attempt');
       res.setHeader('WWW-Authenticate', 'Basic');
       res.status(401).send('401 - Authentication required\n');
     };
