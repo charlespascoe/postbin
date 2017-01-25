@@ -1,4 +1,4 @@
-import 'source-map-support';
+import 'source-map-support/register';
 import routers from 'server/routers';
 import express from 'express';
 import config from 'server/config';
