@@ -35,3 +35,10 @@ jspm_packages
 
 # Optional REPL history
 .node_repl_history
+
+# Ignore development/deployment config
+config/development.json
+config/deploy.json
+
+# Ignore compiled server directory
+.compiled-server/
