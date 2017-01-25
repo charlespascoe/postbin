@@ -9,4 +9,7 @@ if (!path.isAbsolute(dataDir)) {
 
 configuration.dataDir = dataDir;
 
+configuration.protocol = configuration.protocol || 'http';
+configuration.host = configuration.host || 'localhost:8080';
+
 export default configuration;
