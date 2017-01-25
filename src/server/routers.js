@@ -50,7 +50,15 @@ router.post('/bin/:id?', catchHandler(async function (req, res) {
 
   await afs.writeFile(filePath, req.data);
 
-  res.status(201).send(id + '\n');
+  if (req.query.link) {
+    var token = await authenticator.createSingleUseToken();
+
+    var url = `${config.protocol}://token:${token}@${config.host}/bin/${id}`;
+
+    res.status(201).send(url + '\n');
+  } else {
+    res.status(201).send(id + '\n');
+  }
 }));
 
 router.get('/bin/:id', catchHandler(async function (req, res) {
