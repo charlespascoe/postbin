@@ -23,14 +23,17 @@ class Authenticator {
     );
   }
 
-  async createSingleUseToken() {
+  async createSingleUseToken(readonly) {
     let tokenKeyBuf = await Utils.randomBytes(singleUseTokenLength),
         tokenKey = tokenKeyBuf.toString('hex').match(/.{4}/g).join('-');
 
     this.singleUseTokens.push({
       key: tokenKey,
-      expires: Date.now() + expiryPeriod
+      expires: Date.now() + expiryPeriod,
+      readonly: readonly
     });
+
+    loggers.security.info(`Created new single-use token: ${tokenKey} (readonly: ${readonly ? true : false})`);
 
     return tokenKey;
   }
@@ -82,7 +85,7 @@ class Authenticator {
       } else if (token.expires < Date.now()) {
         unauthenticated('Single Use Token: Expired token');
       } else {
-        req.singleUseToken = true;
+        req.singleUseToken = token;
         next();
       }
 

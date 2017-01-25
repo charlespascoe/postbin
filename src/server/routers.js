@@ -25,9 +25,7 @@ router.get('/token', catchHandler(async function (req, res) {
 
   loggers.security.debug('Attempting to create token...');
 
-  let token = await authenticator.createSingleUseToken();
-
-  loggers.security.info(`Created new single-use token: ${token}`);
+  let token = await authenticator.createSingleUseToken(req.query.readonly);
 
   res.status(200).send(token + '\n');
 }));
@@ -42,6 +40,11 @@ router.param('id', function (req, res, next) {
 });
 
 router.post('/bin/:id?', catchHandler(async function (req, res) {
+  if (req.singleUseToken && req.singleUseToken.readonly) {
+    res.message(403, 'Read-only token cannot post data');
+    return;
+  }
+
   let id;
 
   if (req.params.id) {
@@ -60,7 +63,7 @@ router.post('/bin/:id?', catchHandler(async function (req, res) {
   loggers.main.info(`Successfully created '${id}' entity`);
 
   if (req.query.link) {
-    var token = await authenticator.createSingleUseToken();
+    var token = await authenticator.createSingleUseToken(true);
 
     var url = `${config.protocol}://token:${token}@${config.host}/bin/${id}`;
 
