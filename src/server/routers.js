@@ -73,6 +73,20 @@ router.post('/bin/:id?', catchHandler(async function (req, res) {
   }
 }));
 
+router.get('/bin/', catchHandler(async function (req, res) {
+  loggers.main.debug('Listing files...');
+  let files = await afs.readdir(config.dataDir);
+  loggers.main.info(`Listed ${files.length} files`);
+
+  let list = files.sort().join('\n');
+
+  if (req.query.html) {
+    list = '<pre>' + list.replace('<', '&lt;').replace('>', '&gt;') + '</pre>'
+  }
+
+  res.status(200).send(list + '\n');
+}));
+
 router.get('/bin/:id', catchHandler(async function (req, res) {
   let content;
   try {
