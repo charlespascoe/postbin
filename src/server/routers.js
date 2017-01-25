@@ -9,7 +9,7 @@ import Utils from 'server/utils';
 
 const catchHandler = catchAsync((err, req, res) => {
   loggers.main.error({err: err});
-  res.status(500).end();
+  res.message(500, 'Internal server error');
 });
 
 const router = new Router();
