@@ -18,7 +18,7 @@ router.use(authenticator.authenticate);
 
 router.get('/token', catchHandler(async function (req, res) {
   if (req.singleUseToken) {
-    res.status(403).end('403 - Single-Use Token\n');
+    res.message(403, 'Single-Use Token can\'t create more tokens');
     return;
   }
 
@@ -29,7 +29,7 @@ router.get('/token', catchHandler(async function (req, res) {
 
 router.param('id', function (req, res, next) {
   if (!/^[a-z0-9_-]{1,64}$/i.test(req.params.id)) {
-    res.status(400).send('400 - Bad ID\n');
+    res.message(400, 'Bad ID');
     return;
   }
 
@@ -59,7 +59,7 @@ router.get('/bin/:id', catchHandler(async function (req, res) {
     content = await afs.readFile(path.join(config.dataDir, req.params.id));
   } catch (err) {
     if (err.code == 'ENOENT') {
-      res.status(404).end('404 - Not found\n');
+      res.message(404, 'Not found');
       return;
     }
 

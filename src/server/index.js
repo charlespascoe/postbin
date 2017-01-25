@@ -15,7 +15,20 @@ app.use(function (req, res, next) {
     req.clientIp = req.headers['x-forwarded-for'] || req.ip;
   }
 
+  res.message = (statusCode, message) => {
+    res.status(statusCode).send(`${statusCode} - ${statusCode == 500 ? 'Internal server error' : message}\n`);
+  };
+
   next();
+});
+
+app.use(function (err, req, res, next) {
+  loggers.main.error({err: err});
+
+  let statusCode = err.statusCode || 500,
+      message = (statusCode == 500 ? null : err.message) || 'Internal server error';
+
+  res.message(statusCode, message);
 });
 
 app.disable('x-powered-by');
@@ -26,7 +39,7 @@ app.use(function (req, res, next) {
   }, function (err, buff) {
     if (err) {
       loggers.main.error({err: err}, 'Failed to parse data');
-      res.status(err.statusCode || 500).send(err.statusCode ? `${err.statusCode} - ${err.message}\n` : '500 - internal server error');
+      res.message(err.statusCode || 500, err.message);
       return;
     }
     req.data = buff;
