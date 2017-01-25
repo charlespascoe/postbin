@@ -6,6 +6,7 @@ import config from 'server/config';
 import path from 'path';
 import afs from 'server/afs';
 import Utils from 'server/utils';
+import File from 'server/file';
 
 const catchHandler = catchAsync((err, req, res) => {
   loggers.main.error({err: err});
@@ -56,16 +57,16 @@ router.post('/bin/:id?', catchHandler(async function (req, res) {
 
   loggers.main.debug(`Attempting to save '${id}' file (size: ${Utils.formatDataLength(req.data.length)})`);
 
-  let filePath = path.join(config.dataDir, id);
+  let file = new File(id);
 
-  await afs.writeFile(filePath, req.data);
+  await file.save(req.data);
 
   loggers.main.info(`Successfully created '${id}' entity`);
 
   if (req.query.link) {
-    var token = await authenticator.createSingleUseToken(true);
+    let token = await authenticator.createSingleUseToken(true);
 
-    var url = `${config.protocol}://token:${token}@${config.host}/bin/${id}`;
+    let url = file.createLink(token, req.query.encoding, req.query.html);
 
     res.status(201).send(url + '\n');
   } else {
@@ -75,22 +76,27 @@ router.post('/bin/:id?', catchHandler(async function (req, res) {
 
 router.get('/bin/', catchHandler(async function (req, res) {
   loggers.main.debug('Listing files...');
-  let files = await afs.readdir(config.dataDir);
+  let files = await File.listAllFiles();
   loggers.main.info(`Listed ${files.length} files`);
 
-  let list = files.sort().join('\n');
+  let list;
 
   if (req.query.html) {
-    list = '<pre>' + list.replace('<', '&lt;').replace('>', '&gt;') + '</pre>'
+    list = '<ul>' + files.map(file => file.formatHtmlEntry(req.query.encoding)).join('') + '</ul>'
+  } else {
+    list = files.map(file => file.id).join('\n');
   }
 
   res.status(200).send(list + '\n');
 }));
 
 router.get('/bin/:id', catchHandler(async function (req, res) {
+  let file = new File(req.params.id);
+
   let content;
+
   try {
-    content = await afs.readFile(path.join(config.dataDir, req.params.id));
+    content = await file.load();
   } catch (err) {
     if (err.code == 'ENOENT') {
       loggers.main.warn(`Entity not found: ${req.params.id}`);
@@ -105,7 +111,7 @@ router.get('/bin/:id', catchHandler(async function (req, res) {
     content = content.toString(req.query.encoding);
 
     if (req.query.html) {
-      content = '<pre>' + content.replace('<', '&lt;').replace('>', '&gt;') + '</pre>';
+      content = '<pre>' + Utils.escapeHtml(content) + '</pre>';
     }
   }
 
