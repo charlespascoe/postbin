@@ -18,11 +18,16 @@ router.use(authenticator.authenticate);
 
 router.get('/token', catchHandler(async function (req, res) {
   if (req.singleUseToken) {
+    loggers.security.warn('Attempt to create a single-use token using a single-use token');
     res.message(403, 'Single-Use Token can\'t create more tokens');
     return;
   }
 
+  loggers.security.debug('Attempting to create token...');
+
   let token = await authenticator.createSingleUseToken();
+
+  loggers.security.info(`Created new single-use token: ${token}`);
 
   res.status(200).send(token + '\n');
 }));
@@ -46,9 +51,13 @@ router.post('/bin/:id?', catchHandler(async function (req, res) {
     id = idBuff.toString('hex').match(/.{4}/g).join('-');
   }
 
+  loggers.main.debug(`Attempting to save '${id}' file (size: ${Utils.formatDataLength(req.data.length)})`);
+
   let filePath = path.join(config.dataDir, id);
 
   await afs.writeFile(filePath, req.data);
+
+  loggers.main.info(`Successfully created '${id}' entity`);
 
   if (req.query.link) {
     var token = await authenticator.createSingleUseToken();
@@ -67,6 +76,7 @@ router.get('/bin/:id', catchHandler(async function (req, res) {
     content = await afs.readFile(path.join(config.dataDir, req.params.id));
   } catch (err) {
     if (err.code == 'ENOENT') {
+      loggers.main.warn(`Entity not found: ${req.params.id}`);
       res.message(404, 'Not found');
       return;
     }

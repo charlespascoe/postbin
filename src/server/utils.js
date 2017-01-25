@@ -21,4 +21,11 @@ export default class Utils {
       });
     });
   }
+
+  static formatDataLength(length) {
+    if (length < 1024) return `${length}B`;
+    if (length < (1024 * 1024)) return `${(length / 1024).toFixed(2)}KiB`;
+    if (length < (1024 * 1024 * 1024)) return `${(length / (1024 * 1024)).toFixed(2)}MiB`;
+    return `${(length / (1024 * 1024 * 1024)).toFixed(2)}GiB`;
+  }
 }
