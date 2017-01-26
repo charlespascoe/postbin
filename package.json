@@ -5,7 +5,7 @@
   "main": "src/server/index.js",
   "scripts": {
     "start": "NODE_PATH=\"$NODE_PATH:.compiled-server/\"; gulp start | bunyan",
-    "build": "gulp build --production",
+    "build-production": "gulp build --production",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
