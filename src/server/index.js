@@ -4,6 +4,7 @@ import express from 'express';
 import config from 'server/config';
 import loggers from 'server/loggers';
 import rawBody from 'raw-body';
+import afs from 'server/afs';
 
 const port = config.port || 8080;
 const app = express();
@@ -49,4 +50,12 @@ app.use(function (req, res, next) {
 
 routers(app);
 
-app.listen(port, (err) => err ? loggers.main.fatal(err) : loggers.main.info(`Listening on port ${port}`));
+(async function main() {
+  try {
+    await afs.mkdir(config.dataDir);
+  } catch (err) {
+    if (err.code != 'EEXIST') throw err;
+  }
+
+  app.listen(port, (err) => err ? loggers.main.fatal({err: err}) : loggers.main.info(`Listening on port ${port}`));
+})().catch(err => logger.main.fatal({err: err}));
