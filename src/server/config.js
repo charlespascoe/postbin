@@ -1,5 +1,17 @@
-import configuration from 'server/configuration';
 import path from 'path';
+import fs from 'fs';
+
+const CONFIG_PATH = process.env['CONFIG_PATH'] || path.join(__dirname, 'configuration.json');
+
+let configuration;
+
+try {
+  configuration = JSON.parse(fs.readFileSync(CONFIG_PATH));
+} catch (e) {
+  console.error(e);
+  console.log(`Configuration file (${CONFIG_PATH}) not accessible or not valid JSON - using defaults`);
+  configuration = {};
+}
 
 let dataDir = configuration.dataDir || '../data/';
 
