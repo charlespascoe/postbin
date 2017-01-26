@@ -118,6 +118,10 @@ router.get('/bin/:id', catchHandler(async function (req, res) {
   res.status(200).send(content);
 }));
 
+router.get('/about', function (req, res) {
+  res.status(200).send(`Version: ${config.version}\n`);
+});
+
 export default function (app) {
   app.use('/', router);
 };
