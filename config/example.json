@@ -1,0 +1,12 @@
+{
+  "users": {
+    "bob": {
+      "password": "password123"
+    }
+  },
+  "version": "1.2.3",
+  "dataDir": "../../data/",
+  "xForwardedFor": false,
+  "protocol": "http",
+  "host": "localhost:8080"
+}
