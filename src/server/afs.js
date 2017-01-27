@@ -1,15 +1,15 @@
 import fs from 'fs';
 
-var afs = {};
+let afs = {};
 
-for (var func in fs) {
+for (let func in fs) {
   if (typeof fs[func] != 'function' || func.match(/Sync$/)) continue;
 
   (function (funcName) {
     afs[funcName] = function() {
-      var args = [];
+      let args = [];
 
-      for (var i in arguments) {
+      for (let i in arguments) {
         args.push(arguments[i]);
       }
 
