@@ -36,7 +36,7 @@ app.disable('x-powered-by');
 
 app.use(function (req, res, next) {
   rawBody(req, {
-    limit: '16mb'
+    limit: config.sizeLimit
   }, function (err, buff) {
     if (err) {
       loggers.main.error({err: err}, 'Failed to parse data');

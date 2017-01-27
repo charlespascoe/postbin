@@ -24,4 +24,11 @@ configuration.dataDir = dataDir;
 configuration.protocol = configuration.protocol || 'http';
 configuration.host = configuration.host || 'localhost:8080';
 
+configuration.sizeLimit = configuration.sizeLimit || '16mb';
+
+if (!/^\d+(k|m|g)?b$/i.test(configuration.sizeLimit)) {
+  console.log(`Invalid sizeLimit (${configuration.sizeLimit}), defaulting to 16mb`);
+  configuration.sizeLimit = '16mb';
+}
+
 export default configuration;
