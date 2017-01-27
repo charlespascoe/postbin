@@ -38,4 +38,6 @@ if (!/^(TRACE|DEBUG|INFO|WARN|ERROR|FATAL)$/.test(configuration.logLevel)) {
   configuration.logLevel = 'INFO';
 }
 
+configuration.version = configuration.version || process.env['VERSION'] || 'DEV';
+
 export default configuration;
