@@ -31,4 +31,11 @@ if (!/^\d+(k|m|g)?b$/i.test(configuration.sizeLimit)) {
   configuration.sizeLimit = '16mb';
 }
 
+configuration.logLevel = configuration.logLevel || 'INFO';
+
+if (!/^(TRACE|DEBUG|INFO|WARN|ERROR|FATAL)$/.test(configuration.logLevel)) {
+  console.log(`Invalid logLevel (${configuration.logLevel}), defaulting to INFO`);
+  configuration.logLevel = 'INFO';
+}
+
 export default configuration;

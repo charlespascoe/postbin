@@ -1,4 +1,5 @@
 import bunyan from 'bunyan';
+import config from 'server/config';
 import Utils from 'server/utils';
 
 const commonConfig = {
@@ -6,7 +7,7 @@ const commonConfig = {
     err: bunyan.stdSerializers.err,
     ip: (ip) => ip.match(/^::ffff:/) ? ip.substring(7) : ip
   },
-  level: bunyan.DEBUG,
+  level: config.logLevel,
   src: true
 };
 
