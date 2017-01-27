@@ -39,7 +39,11 @@ app.use(function (req, res, next) {
     limit: config.sizeLimit
   }, function (err, buff) {
     if (err) {
-      loggers.main.error({err: err}, 'Failed to parse data');
+      if (400 <= err.statusCode && err.statusCode < 500) {
+        loggers.main.warn({reason: err.message}, 'Warning when parsing data');
+      } else {
+        loggers.main.error({err: err}, 'Failed to parse data');
+      }
       res.message(err.statusCode || 500, err.message);
       return;
     }
