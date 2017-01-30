@@ -8,7 +8,7 @@ const commonConfig = {
     ip: (ip) => ip.match(/^::ffff:/) ? ip.substring(7) : ip
   },
   level: config.logLevel,
-  src: true
+  src: config.logSrc
 };
 
 export default {
