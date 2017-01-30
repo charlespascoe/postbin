@@ -12,7 +12,7 @@ RUN useradd --user-group --create-home --shell /bin/false $USERNAME
 ENV HOME=/home/$USERNAME
 
 # Create server directory
-ENV APP_DIR=$HOME/proj-mgmt-sys/
+ENV APP_DIR=$HOME/postbin/
 RUN mkdir -p $APP_DIR
 WORKDIR $APP_DIR
 
