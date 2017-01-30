@@ -9,6 +9,10 @@ export default class File {
     this.path = path.join(config.dataDir, id);
   }
 
+  static isValidId(id) {
+    return /^[a-z0-9_-]{1,64}$/i.test(id);
+  }
+
   static async listAllFiles() {
     let files = await afs.readdir(config.dataDir);
 

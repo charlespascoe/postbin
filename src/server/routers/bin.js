@@ -12,7 +12,7 @@ const catchHandler = catchAsync((err, req, res) => {
 const router = new Router();
 
 router.param('id', function (req, res, next) {
-  if (!/^[a-z0-9_-]{1,64}$/i.test(req.params.id)) {
+  if (!File.isValidId(req.params.id)) {
     res.message(400, 'Bad ID');
     return;
   }
