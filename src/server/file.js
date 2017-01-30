@@ -33,6 +33,10 @@ export default class File {
     }
   }
 
+  async delete() {
+    await afs.unlink(this.path);
+  }
+
   createLink(token, encoding = null, html = null) {
     let link = `${config.protocol}://token:${token}@${config.host}/bin/${this.id}`;
 

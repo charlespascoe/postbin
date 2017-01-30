@@ -24,6 +24,8 @@ router.post('/:id?', catchHandler((req, res) => binController.createFile(req, re
 
 router.get('/', catchHandler((req, res) => binController.listFiles(req, res)));
 
-router.get('/:id', catchHandler((req, res) => binController.getFile(req, res)));
+router.route('/:id')
+  .get(catchHandler((req, res) => binController.getFile(req, res)))
+  .delete(catchHandler((req, res) => binController.getFile(req, res)));
 
 export default router;

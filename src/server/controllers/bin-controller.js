@@ -76,6 +76,10 @@ export class BinController {
       throw err;
     }
 
+    if (req.method == 'DELETE') {
+      await file.delete();
+    }
+
     if (req.query.encoding && /^(ascii|utf8|utf16le|ucs2|base64|hex)$/.test(req.query.encoding)) {
       content = content.toString(req.query.encoding);
 
