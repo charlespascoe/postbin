@@ -1,10 +1,6 @@
 import { Router } from 'express';
-import authenticator from 'server/authenticator';
 import loggers from 'server/loggers';
 import catchAsync from 'server/catch-async';
-import config from 'server/config';
-import path from 'path';
-import afs from 'server/afs';
 import Utils from 'server/utils';
 import File from 'server/file';
 
@@ -15,22 +11,6 @@ const catchHandler = catchAsync((err, req, res) => {
 
 const router = new Router();
 
-router.use(authenticator.authenticate);
-
-router.get('/token', catchHandler(async function (req, res) {
-  if (req.singleUseToken) {
-    loggers.security.warn('Attempt to create a single-use token using a single-use token');
-    res.message(403, 'Single-Use Token can\'t create more tokens');
-    return;
-  }
-
-  loggers.security.debug('Attempting to create token...');
-
-  let token = await authenticator.createSingleUseToken(req.query.readonly);
-
-  res.status(200).send(token + '\n');
-}));
-
 router.param('id', function (req, res, next) {
   if (!/^[a-z0-9_-]{1,64}$/i.test(req.params.id)) {
     res.message(400, 'Bad ID');
@@ -40,7 +20,7 @@ router.param('id', function (req, res, next) {
   next();
 });
 
-router.post('/bin/:id?', catchHandler(async function (req, res) {
+router.post('/:id?', catchHandler(async function (req, res) {
   if (req.singleUseToken && req.singleUseToken.readonly) {
     res.message(403, 'Read-only token cannot post data');
     return;
@@ -74,7 +54,7 @@ router.post('/bin/:id?', catchHandler(async function (req, res) {
   }
 }));
 
-router.get('/bin/', catchHandler(async function (req, res) {
+router.get('/', catchHandler(async function (req, res) {
   loggers.main.debug('Listing files...');
   let files = await File.listAllFiles();
   loggers.main.info(`Listed ${files.length} files`);
@@ -90,7 +70,7 @@ router.get('/bin/', catchHandler(async function (req, res) {
   res.status(200).send(list + '\n');
 }));
 
-router.get('/bin/:id', catchHandler(async function (req, res) {
+router.get('/:id', catchHandler(async function (req, res) {
   let file = new File(req.params.id);
 
   let content;
@@ -118,10 +98,4 @@ router.get('/bin/:id', catchHandler(async function (req, res) {
   res.status(200).send(content);
 }));
 
-router.get('/about', function (req, res) {
-  res.status(200).send(`Version: ${config.version}\n`);
-});
-
-export default function (app) {
-  app.use('/', router);
-};
+export default router;
