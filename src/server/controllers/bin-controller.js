@@ -2,10 +2,12 @@ import { Router } from 'express';
 import loggers from 'server/loggers';
 import Utils from 'server/utils';
 import File from 'server/file';
+import authenticator from 'server/authenticator';
 
 export class BinController {
-  constructor(loggers) {
+  constructor(loggers, authenticator) {
     this.loggers = loggers;
+    this.authenticator = authenticator;
   }
 
   async createFile(req, res) {
@@ -33,7 +35,7 @@ export class BinController {
     this.loggers.main.info(`Successfully created '${id}' entity`);
 
     if (req.query.link) {
-      let token = await authenticator.createSingleUseToken(true);
+      let token = await this.authenticator.createSingleUseToken(true);
 
       let url = file.createLink(token, req.query.encoding, req.query.html);
 
@@ -92,4 +94,4 @@ export class BinController {
   }
 }
 
-export default new BinController(loggers);
+export default new BinController(loggers, authenticator);
