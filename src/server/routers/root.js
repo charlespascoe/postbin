@@ -9,4 +9,6 @@ router.get('/token', perfMon.route('create-token', (req, res) => rootController.
 
 router.get('/about', perfMon.route('about', (req, res) => rootController.about(req, res)));
 
+router.get('/stats', perfMon.route('stats', (req, res) => rootController.stats(req, res)));
+
 export default router;

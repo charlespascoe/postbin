@@ -57,6 +57,19 @@ export class PerformanceMonitor {
     if (this.buffer.length > 0) this.writeToFile();
   }
 
+  async loadData() {
+    let data;
+
+    try {
+      data = await this.afs.readFile(this.config.perfStatsFile, 'utf8');
+    } catch (err) {
+      if (err.code == 'ENOENT') return [];
+      throw err;
+    }
+
+    return data.split('\n').filter(json => json.length > 0).map(json => JSON.parse(json));
+  }
+
   errorHandler(err, req, res) {
     res.status(500).send();
   }
