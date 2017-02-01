@@ -32,6 +32,8 @@ export class RootController {
   }
 
   async stats(req, res) {
+    this.loggers.main.debug('Loading stats...');
+
     let data = await this.perfMon.loadData();
 
     let results = data
@@ -58,6 +60,8 @@ export class RootController {
     }
 
     res.status(200).send(formattedTable);
+
+    this.loggers.main.info('Loaded stats');
   }
 }
 
