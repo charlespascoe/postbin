@@ -10,7 +10,7 @@ export default class File {
   }
 
   static isValidId(id) {
-    return /^[a-z0-9_-]{1,64}$/i.test(id);
+    return /^[a-z0-9_-][a-z0-9_.-]{0,63}$/i.test(id);
   }
 
   static async listAllFiles() {
