@@ -1,4 +1,4 @@
-DOCKER_REPO=postbin
+DOCKER_REPO?=postbin
 TAG?=latest
 VERSION?=$(TAG)
 
