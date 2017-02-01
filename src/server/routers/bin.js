@@ -1,13 +1,8 @@
 import { Router } from 'express';
 import loggers from 'server/loggers';
-import catchAsync from 'server/catch-async';
 import File from 'server/file';
 import binController from 'server/controllers/bin-controller';
-
-const catchHandler = catchAsync((err, req, res) => {
-  loggers.main.error({err: err});
-  res.message(500, 'Internal server error');
-});
+import perfMon from 'server/performance-monitor';
 
 const router = new Router();
 
@@ -20,12 +15,12 @@ router.param('id', function (req, res, next) {
   next();
 });
 
-router.post('/:id?', catchHandler((req, res) => binController.createFile(req, res)));
+router.post('/:id?', perfMon.route('bin/create', (req, res) => binController.createFile(req, res)));
 
-router.get('/', catchHandler((req, res) => binController.listFiles(req, res)));
+router.get('/', perfMon.route('bin/list', (req, res) => binController.listFiles(req, res)));
 
 router.route('/:id')
-  .get(catchHandler((req, res) => binController.getFile(req, res)))
-  .delete(catchHandler((req, res) => binController.getFile(req, res)));
+  .get(perfMon.route('bin/get', (req, res) => binController.getFile(req, res)))
+  .delete(perfMon.route('bin/delete', (req, res) => binController.getFile(req, res)));
 
 export default router;

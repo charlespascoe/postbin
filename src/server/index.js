@@ -5,6 +5,7 @@ import config from 'server/config';
 import loggers from 'server/loggers';
 import rawBody from 'raw-body';
 import afs from 'server/afs';
+import perfMon from 'server/performance-monitor';
 
 const port = config.port || 8080;
 const app = express();
@@ -31,6 +32,11 @@ app.use(function (err, req, res, next) {
 
   res.message(statusCode, message);
 });
+
+perfMon.errorHandler = (err, req, res) => {
+  loggers.main.error({err: err});
+  res.message(500);
+};
 
 app.disable('x-powered-by');
 

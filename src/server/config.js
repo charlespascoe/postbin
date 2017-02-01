@@ -21,6 +21,14 @@ if (!path.isAbsolute(dataDir)) {
 
 configuration.dataDir = dataDir;
 
+let perfStatsFile = configuration.perfStatsFile || '../perf-stats.txt';
+
+if (!path.isAbsolute(perfStatsFile)) {
+  perfStatsFile = path.join(__dirname, perfStatsFile);
+}
+
+configuration.perfStatsFile = perfStatsFile;
+
 configuration.protocol = configuration.protocol || 'http';
 configuration.host = configuration.host || 'localhost:8080';
 
