@@ -13,6 +13,8 @@ try {
   configuration = {};
 }
 
+configuration.version = configuration.version || process.env['VERSION'] || 'DEV';
+
 // ===== PATHS =====
 
 function absPath(conf, key, defaultValue) {
