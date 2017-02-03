@@ -33,7 +33,7 @@ class Authenticator {
     } catch (err) {
       if (err.code == 'ENOENT') {
         this.loggers.security.info(`No htpasswd file found, password login disabled (auth path: '${this.config.auth}')`);
-        this.htpasswdFile = '';
+        htpasswdFile = '';
       } else {
         throw err;
       }
