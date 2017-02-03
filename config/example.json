@@ -1,9 +1,5 @@
 {
-  "users": {
-    "bob": {
-      "password": "password123"
-    }
-  },
+  "auth": "../../htpasswd",
   "version": "1.2.3",
   "dataDir": "../../data/",
   "xForwardedFor": false,

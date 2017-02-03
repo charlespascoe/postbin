@@ -48,4 +48,12 @@ if (!/^(TRACE|DEBUG|INFO|WARN|ERROR|FATAL)$/.test(configuration.logLevel)) {
 
 configuration.version = configuration.version || process.env['VERSION'] || 'DEV';
 
+let authFile = configuration.auth || '../htpasswd';
+
+if (!path.isAbsolute(authFile)) {
+  authFile = path.join(__dirname, authFile);
+}
+
+configuration.auth = authFile;
+
 export default configuration;

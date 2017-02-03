@@ -1,26 +1,51 @@
 import config from 'server/config';
 import loggers from 'server/loggers';
 import Utils from 'server/utils';
+import afs from 'server/afs';
+import htpasswd from 'htpasswd-auth';
+import catchAsync from 'server/catch-async';
 
 const singleUseTokenLength = 4,
       expiryPeriod = 5 * 60 * 1000;
 
+const catchHandler = catchAsync((err, req, res) => {
+  loggers.security.error({err: err}, 'An error occurred during authentication');
+  res.message(500);
+});
+
 class Authenticator {
-  constructor(loggers, config) {
+  constructor(loggers, config, afs) {
     this.singleUseTokens = [];
     this.loggers = loggers;
-    this.users = config.users;
-    this.authenticate = this.authenticate.bind(this);
+    this.config = config;
+    this.afs = afs;
+    this.authenticate = catchHandler(this.authenticate.bind(this));
   }
 
-  checkCredentials(username, password) {
-    return (
-      typeof username == 'string' &&
-      typeof password == 'string' &&
-      /^[A-Za-z0-9]+$/.test(username) &&
-      this.users[username] &&
-      this.users[username].password == password
-    );
+  async checkCredentials(username, password) {
+    this.loggers.security.debug('Checking user credentials...');
+    let start = Date.now();
+
+    let htpasswdFile;
+
+    try {
+      htpasswdFile = await this.afs.readFile(this.config.auth, 'utf8');
+    } catch (err) {
+      if (err.code == 'ENOENT') {
+        this.loggers.security.info(`No htpasswd file found, password login disabled (auth path: '${this.config.auth}')`);
+        this.htpasswdFile = '';
+      } else {
+        throw err;
+      }
+    }
+
+    if (typeof username != 'string' || typeof password != 'string' || !/^[A-Za-z0-9]+$/.test(username)) return false;
+
+    let result = await htpasswd.authenticate(username, password, htpasswdFile);
+
+    this.loggers.security.debug(`User Credential Check: ${result} (${Date.now() - start}ms)`);
+
+    return result;
   }
 
   async createSingleUseToken(readonly) {
@@ -38,7 +63,8 @@ class Authenticator {
     return tokenKey;
   }
 
-  authenticate(req, res, next) {
+  async authenticate(req, res, next) {
+    throw new Error('Test');
     let authHeader = req.headers.authorization;
 
     req.singleUseToken = false;
@@ -64,11 +90,23 @@ class Authenticator {
 
       if (userPass[0] === 'token') {
         authHeader = `Bearer ${userPass[1]}`;
-      } else if (this.checkCredentials(userPass[0], userPass[1])) {
-        next();
-        return;
       } else {
-        unauthenticated('Basic auth: Invalid or incorrect username and password');
+        let authenticated;
+
+        try {
+          authenticated = await this.checkCredentials(userPass[0], userPass[1]);
+        } catch (err) {
+          this.loggers.security.error({err: err}, 'Error occurred when authenticating a user via basic auth');
+          res.message(500);
+          return;
+        }
+
+        if (authenticated) {
+          next();
+        } else {
+          unauthenticated('Basic auth: Invalid or incorrect username and password');
+        }
+
         return;
       }
     }
@@ -98,4 +136,4 @@ class Authenticator {
   }
 }
 
-export default new Authenticator(loggers, config);
+export default new Authenticator(loggers, config, afs);
