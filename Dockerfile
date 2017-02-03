@@ -12,12 +12,15 @@ RUN useradd --user-group --create-home --shell /bin/false $USERNAME
 ENV HOME=/home/$USERNAME
 
 # Create server directory
-ENV APP_DIR=$HOME/postbin/
+ENV APP_DIR=$HOME/postbin
 RUN mkdir -p $APP_DIR
 WORKDIR $APP_DIR
 
 # Config path
 ENV CONFIG_PATH=/etc/config.json
+
+# Basic auth file
+ENV HTPASSWD_AUTH=$APPDIR/htpasswd
 
 # Import server source
 COPY docker-build/ .

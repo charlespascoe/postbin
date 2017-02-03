@@ -48,7 +48,7 @@ if (!/^(TRACE|DEBUG|INFO|WARN|ERROR|FATAL)$/.test(configuration.logLevel)) {
 
 configuration.version = configuration.version || process.env['VERSION'] || 'DEV';
 
-let authFile = configuration.auth || '../htpasswd';
+let authFile = configuration.auth || process.env['HTPASSWD_FILE'] || '../htpasswd';
 
 if (!path.isAbsolute(authFile)) {
   authFile = path.join(__dirname, authFile);
