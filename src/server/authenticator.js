@@ -64,7 +64,6 @@ class Authenticator {
   }
 
   async authenticate(req, res, next) {
-    throw new Error('Test');
     let authHeader = req.headers.authorization;
 
     req.singleUseToken = false;
