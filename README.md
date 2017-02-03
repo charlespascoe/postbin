@@ -62,9 +62,11 @@ To make a read-only token (i.e. one that can't be used to upload files):
 
 To use a token, either use the `Authorization` header using `Bearer`, or via basic auth using the dummy `token` user:
 
-`$ curl https://postbin.yourhost.com/bin -H 'Authorization: Bearer cd97-1d0f'`
-
-`$ curl https://postbin.yourhost.com/bin -u token`
+```
+$ curl https://postbin.yourhost.com/bin -H 'Authorization: Bearer cd97-1d0f'`
+OR
+$ curl https://postbin.yourhost.com/bin -u token
+```
 
 Setting Up
 ==========
