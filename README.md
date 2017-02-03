@@ -3,7 +3,7 @@ Postbin
 
 A simple file/text storage server, designed primarily to be used via cURL/wget.
 
-cURL comes bundled with most Linux distrobutions, so postbin can be used directly from the terminal on new Linux installs (for copying SSH keys etc.)
+cURL comes bundled with most Linux distributions, so postbin can be used directly from the terminal on new Linux installs (for copying SSH keys etc.)
 
 Usage
 =====
