@@ -3,7 +3,7 @@ Postbin
 
 A simple file/text storage server, designed primarily to be used via cURL/wget.
 
-cURl comes bundled with most Linux distrobutions, so postbin can be used directly from the terminal on new Linux installs (for copying SSH keys etc.)
+cURL comes bundled with most Linux distrobutions, so postbin can be used directly from the terminal on new Linux installs (for copying SSH keys etc.)
 
 Usage
 =====
@@ -31,6 +31,7 @@ Omit `-o` option to print to standard out.
 Delete text/a file:
 
 `$ curl https://postbin.yourhost.com/bin/id-here -u username -X DELETE -o path/to/output`
+
 Note that when you delete a file, its contents are returned.
 
 Listing all files:
@@ -63,7 +64,7 @@ To make a read-only token (i.e. one that can't be used to upload files):
 To use a token, either use the `Authorization` header using `Bearer`, or via basic auth using the dummy `token` user:
 
 ```
-$ curl https://postbin.yourhost.com/bin -H 'Authorization: Bearer cd97-1d0f'`
+$ curl https://postbin.yourhost.com/bin -H 'Authorization: Bearer cd97-1d0f'
 OR
 $ curl https://postbin.yourhost.com/bin -u token
 ```
