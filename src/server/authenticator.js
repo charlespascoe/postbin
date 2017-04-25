@@ -74,21 +74,25 @@ class Authenticator {
       res.message(401, 'Authentication required');
     };
 
-    if (typeof authHeader != 'string') {
+    if (typeof authHeader !== 'string' && typeof req.query.token !== 'string') {
       unauthenticated('No authentication offered');
       return;
     }
+
+    authHeader = authHeader || '';
 
     let basicAuthRegex = /^Basic ((?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4}))$/,
         bearerAuthRegex = /^Bearer ([a-f0-9-]+)$/;
 
     let match = authHeader.match(basicAuthRegex);
 
+    let tokenKey = req.query.token;
+
     if (match) {
       let userPass = Buffer.from(match[1], 'base64').toString('utf-8').split(/:(.+)/);
 
       if (userPass[0] === 'token') {
-        authHeader = `Bearer ${userPass[1]}`;
+        tokenKey = userPass[1];
       } else {
         let authenticated;
 
@@ -113,9 +117,11 @@ class Authenticator {
     match = authHeader.match(bearerAuthRegex);
 
     if (match) {
-      let singleUseToken = match[1];
+      tokenKey = match[1];
+    }
 
-      let token = this.singleUseTokens.find(tok => tok.key == singleUseToken);
+    if (tokenKey) {
+      let token = this.singleUseTokens.find(tok => tok.key === tokenKey);
 
       if (token == null) {
         unauthenticated('Single Use Token: Non-existent token');
@@ -126,7 +132,7 @@ class Authenticator {
         next();
       }
 
-      this.singleUseTokens = this.singleUseTokens.filter(tok => tok.key != singleUseToken);
+      this.singleUseTokens = this.singleUseTokens.filter(tok => tok.key != tokenKey);
 
       return;
     }
