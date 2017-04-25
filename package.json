@@ -1,6 +1,6 @@
 {
   "name": "postbin",
-  "version": "0.0.1",
+  "version": "0.4.1",
   "description": "Postbin",
   "main": "src/server/index.js",
   "scripts": {
